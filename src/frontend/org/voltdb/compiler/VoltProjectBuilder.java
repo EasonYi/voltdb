@@ -69,6 +69,7 @@ import org.voltdb.compiler.deploymentfile.UsersType.User;
 import org.voltdb.utils.NotImplementedException;
 
 import com.google_voltpatches.common.collect.ImmutableMap;
+import org.voltdb.utils.CatalogUtil;
 
 /**
  * Alternate (programmatic) interface to VoltCompiler. Give the class all of
@@ -775,6 +776,10 @@ public class VoltProjectBuilder {
         }
     }
 
+    public static File writeDeploymentToTempFile(final String content) {
+        String dep = new String(CatalogUtil.generateEffectiveDeploymentAndHash(content.getBytes()).getSecond());
+        return writeStringToTempFile(dep);
+    }
     /**
      * Utility method to take a string and put it in a file. This is used by
      * this class to write the project file to a temp file, but it also used

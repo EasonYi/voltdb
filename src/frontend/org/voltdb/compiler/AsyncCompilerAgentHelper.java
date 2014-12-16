@@ -129,7 +129,7 @@ public class AsyncCompilerAgentHelper
                 return retval;
             }
             retval.catalogBytes = newCatalogBytes;
-            retval.catalogHash = CatalogUtil.makeCatalogOrDeploymentHash(newCatalogBytes);
+            retval.catalogHash = CatalogUtil.makeCatalogHash(newCatalogBytes);
 
             // get the diff between catalogs
             // try to get the new catalog from the params
@@ -174,9 +174,10 @@ public class AsyncCompilerAgentHelper
                 return retval;
             }
 
-            retval.deploymentString = deploymentString;
-            retval.deploymentHash =
-                CatalogUtil.makeCatalogOrDeploymentHash(deploymentString.getBytes("UTF-8"));
+            Pair<byte[], byte[]> p = CatalogUtil.generateEffectiveDeploymentAndHash(deploymentString.getBytes("UTF-8"));
+            retval.deploymentString = new String(p.getSecond());
+            retval.deploymentHash = p.getFirst();
+
 
             // store the version of the catalog the diffs were created against.
             // verified when / if the update procedure runs in order to verify

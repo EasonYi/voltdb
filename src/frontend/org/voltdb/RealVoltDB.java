@@ -1276,6 +1276,7 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback
 
             try {
                 deploymentBytes = org.voltcore.utils.CoreUtils.urlToBytes(m_config.m_pathToDeployment);
+                deploymentBytes = CatalogUtil.generateEffectiveDeploymentAndHash(deploymentBytes).getSecond();
             } catch (Exception ex) {
                 //Let us get bytes from ZK
             }
@@ -1303,7 +1304,7 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback
                     //We will ignore the supplied or default deployment anyways.
                     if (deploymentBytes != null && !m_config.m_deploymentDefault) {
                         byte[] deploymentHashHere =
-                            CatalogUtil.makeCatalogOrDeploymentHash(deploymentBytes);
+                            CatalogUtil.generateEffectiveDeploymentAndHash(deploymentBytes).getFirst();
                         if (!(Arrays.equals(deploymentHashHere, catalogStuff.getDeploymentHash())))
                         {
                             hostLog.warn("The locally provided deployment configuration did not " +
