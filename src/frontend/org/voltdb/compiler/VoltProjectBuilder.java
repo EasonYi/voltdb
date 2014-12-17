@@ -777,7 +777,7 @@ public class VoltProjectBuilder {
     }
 
     public static File writeDeploymentToTempFile(final String content) {
-        String dep = new String(CatalogUtil.generateEffectiveDeploymentAndHash(content.getBytes()).getSecond());
+        String dep = new String(CatalogUtil.getDefaultPopulatedDeploymentAndHash(content.getBytes()).getSecond());
         return writeStringToTempFile(dep);
     }
     /**

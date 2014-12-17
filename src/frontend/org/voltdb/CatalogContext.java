@@ -125,7 +125,7 @@ public class CatalogContext {
         tables = database.getTables();
         authSystem = new AuthSystem(database, cluster.getSecurityenabled());
 
-        Pair<byte[], byte[]> p = CatalogUtil.generateEffectiveDeploymentAndHash(deploymentBytes);
+        Pair<byte[], byte[]> p = CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentBytes);
         this.deploymentHash = p.getFirst();
         this.deploymentBytes = p.getSecond();
         m_memoizedDeployment = null;

@@ -59,6 +59,9 @@ public class AsyncCompilerAgentHelper
             // or null if it still needs to be filled in.
             byte[] newCatalogBytes = work.operationBytes;
             String deploymentString = work.operationString;
+            if (deploymentString != null) {
+                deploymentString = new String(CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentString.getBytes()).getSecond());
+            }
             if (work.invocationName.equals("@UpdateApplicationCatalog")) {
                 // Do the straight-forward thing with the args, filling in nulls as appropriate
                 // Grab the current catalog bytes if @UAC had a null catalog
@@ -174,7 +177,7 @@ public class AsyncCompilerAgentHelper
                 return retval;
             }
 
-            Pair<byte[], byte[]> p = CatalogUtil.generateEffectiveDeploymentAndHash(deploymentString.getBytes("UTF-8"));
+            Pair<byte[], byte[]> p = CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentString.getBytes("UTF-8"));
             retval.deploymentString = new String(p.getSecond());
             retval.deploymentHash = p.getFirst();
 

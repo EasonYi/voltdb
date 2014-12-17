@@ -650,7 +650,7 @@ public abstract class CatalogUtil {
      * @return Returns a reference to the root <deployment> element.
      */
     @SuppressWarnings("unchecked")
-    public static byte[] getEffectiveDeploymentBytes(InputStream deployIS) {
+    public static byte[] getDefaultPopulatedDeploymentBytes(InputStream deployIS) {
         try {
             DeploymentType deployment = getDeployment(deployIS);
             //partition detection
@@ -1359,9 +1359,9 @@ public abstract class CatalogUtil {
      * or deployment file, do the irritating exception crash test, jam the bytes in,
      * and get the SHA-1 hash.
      */
-    public static Pair<byte[],byte[]> generateEffectiveDeploymentAndHash(byte[] inbytes)
+    public static Pair<byte[],byte[]> getDefaultPopulatedDeploymentAndHash(byte[] inbytes)
     {
-        inbytes = getEffectiveDeploymentBytes(new ByteArrayInputStream(inbytes));
+        inbytes = getDefaultPopulatedDeploymentBytes(new ByteArrayInputStream(inbytes));
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("SHA-1");
@@ -1397,7 +1397,7 @@ public abstract class CatalogUtil {
         versionAndBytes.putLong(txnId);
         versionAndBytes.putLong(uniqueId);
         versionAndBytes.put(makeCatalogHash(catalogBytes));
-        versionAndBytes.put(generateEffectiveDeploymentAndHash(deploymentBytes).getFirst());
+        versionAndBytes.put(getDefaultPopulatedDeploymentAndHash(deploymentBytes).getFirst());
         versionAndBytes.putInt(catalogBytes.length);
         versionAndBytes.put(catalogBytes);
         versionAndBytes.putInt(deploymentBytes.length);
