@@ -69,6 +69,7 @@ import org.voltdb.compiler.deploymentfile.UsersType.User;
 import org.voltdb.utils.NotImplementedException;
 
 import com.google_voltpatches.common.collect.ImmutableMap;
+import java.io.ByteArrayInputStream;
 import org.voltdb.utils.CatalogUtil;
 
 /**
@@ -777,7 +778,7 @@ public class VoltProjectBuilder {
     }
 
     public static File writeDeploymentToTempFile(final String content) {
-        String dep = new String(CatalogUtil.getDefaultPopulatedDeploymentAndHash(content.getBytes()).getSecond());
+        String dep = new String(CatalogUtil.getDefaultPopulatedDeploymentBytes(new ByteArrayInputStream(content.getBytes())));
         return writeStringToTempFile(dep);
     }
     /**

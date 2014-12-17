@@ -17,6 +17,7 @@
 
 package org.voltdb.compiler;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map.Entry;
 
@@ -60,7 +61,7 @@ public class AsyncCompilerAgentHelper
             byte[] newCatalogBytes = work.operationBytes;
             String deploymentString = work.operationString;
             if (deploymentString != null) {
-                deploymentString = new String(CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentString.getBytes()).getSecond());
+                deploymentString = CatalogUtil.getDefaultPopulatedDeploymentBytes(deploymentString);
             }
             if (work.invocationName.equals("@UpdateApplicationCatalog")) {
                 // Do the straight-forward thing with the args, filling in nulls as appropriate
@@ -132,7 +133,7 @@ public class AsyncCompilerAgentHelper
                 return retval;
             }
             retval.catalogBytes = newCatalogBytes;
-            retval.catalogHash = CatalogUtil.makeCatalogHash(newCatalogBytes);
+            retval.catalogHash = CatalogUtil.makeCatalogOrDeploymentHash(newCatalogBytes);
 
             // get the diff between catalogs
             // try to get the new catalog from the params
@@ -177,9 +178,8 @@ public class AsyncCompilerAgentHelper
                 return retval;
             }
 
-            Pair<byte[], byte[]> p = CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentString.getBytes("UTF-8"));
-            retval.deploymentString = new String(p.getSecond());
-            retval.deploymentHash = p.getFirst();
+            retval.deploymentString = CatalogUtil.getDefaultPopulatedDeploymentBytes(deploymentString);
+            retval.deploymentHash = CatalogUtil.makeCatalogOrDeploymentHash(retval.deploymentString.getBytes());
 
 
             // store the version of the catalog the diffs were created against.

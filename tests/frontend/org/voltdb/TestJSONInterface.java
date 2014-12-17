@@ -177,15 +177,15 @@ public class TestJSONInterface extends TestCase {
         return response;
     }
 
-    public static String getUrlOverJSON(String url, String user, String password, String scheme, int expectedCode, String expectedCt) throws Exception {
+    private static String getUrlOverJSON(String url, String user, String password, String scheme, int expectedCode, String expectedCt) throws Exception {
         return httpUrlOverJSON("GET", url, user, password, scheme, expectedCode, expectedCt, null);
     }
 
-    public static String postUrlOverJSON(String url, String user, String password, String scheme, int expectedCode, String expectedCt, Map<String,String> params) throws Exception {
+    private static String postUrlOverJSON(String url, String user, String password, String scheme, int expectedCode, String expectedCt, Map<String,String> params) throws Exception {
         return httpUrlOverJSON("POST", url, user, password, scheme, expectedCode, expectedCt, params);
     }
 
-    public static String httpUrlOverJSON(String method, String url, String user, String password, String scheme, int expectedCode, String expectedCt, Map<String,String> params) throws Exception {
+    private static String httpUrlOverJSON(String method, String url, String user, String password, String scheme, int expectedCode, String expectedCt, Map<String,String> params) throws Exception {
         URL jsonAPIURL = new URL(url);
 
         HttpURLConnection conn = (HttpURLConnection) jsonAPIURL.openConnection();
@@ -203,6 +203,7 @@ public class TestJSONInterface extends TestCase {
         }
         conn.connect();
         if (params != null && params.size() > 0) {
+            byte andbyte[] = { '&' };
             OutputStream os = conn.getOutputStream();
             for (String key : params.keySet()) {
                 os.write(key.getBytes());
@@ -210,6 +211,7 @@ public class TestJSONInterface extends TestCase {
                     String b = "=" + params.get(key);
                     os.write(b.getBytes());
                 }
+                os.write(andbyte);
             }
         }
 

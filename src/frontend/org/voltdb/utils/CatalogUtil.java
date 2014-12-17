@@ -95,7 +95,6 @@ import org.voltdb.compiler.deploymentfile.SecurityProviderString;
 import org.voltdb.compiler.deploymentfile.SecurityType;
 import org.voltdb.compiler.deploymentfile.SnapshotType;
 import org.voltdb.compiler.deploymentfile.SystemSettingsType;
-import org.voltdb.compiler.deploymentfile.SystemSettingsType.Temptables;
 import org.voltdb.compiler.deploymentfile.UsersType;
 import org.voltdb.compilereport.IndexAnnotation;
 import org.voltdb.compilereport.ProcedureAnnotation;
@@ -644,8 +643,16 @@ public abstract class CatalogUtil {
         }
     }
 
+    public static String getDefaultPopulatedDeploymentBytes(String deployment) {
+        byte[] bytes = CatalogUtil.getDefaultPopulatedDeploymentBytes(new ByteArrayInputStream(deployment.getBytes()));
+        if (bytes == null) {
+            return null;
+        }
+        return new String(bytes);
+    }
+
     /**
-     * Get a reference to the root <deployment> element from the deployment.xml file.
+     * MODIFY this if you add a deployment entry which requires defaults to be filled in.
      * @param deployIS
      * @return Returns a reference to the root <deployment> element.
      */
@@ -653,6 +660,10 @@ public abstract class CatalogUtil {
     public static byte[] getDefaultPopulatedDeploymentBytes(InputStream deployIS) {
         try {
             DeploymentType deployment = getDeployment(deployIS);
+            if (deployment == null) {
+                hostLog.info("No deployment or valid deployment bytes supplied.");
+                return null;
+            }
             //partition detection
             if (deployment.getPartitionDetection() == null) {
                 PartitionDetectionType pd = new PartitionDetectionType();
@@ -708,12 +719,40 @@ public abstract class CatalogUtil {
             //Paths
             if (deployment.getPaths() == null) {
                 PathsType paths = new PathsType();
+                deployment.setPaths(paths);
+            }
+            //create paths entries
+            PathsType paths = deployment.getPaths();
+            if (paths.getVoltdbroot() == null) {
                 PathsType.Voltdbroot root = new PathsType.Voltdbroot();
                 root.setPath("voltdbroot");
                 paths.setVoltdbroot(root);
-                deployment.setPaths(paths);
-                //create entries.
             }
+            //snapshot
+            if (paths.getSnapshots() == null) {
+                PathEntry snap = new PathEntry();
+                snap.setPath("snapshots");
+                paths.setSnapshots(snap);
+            }
+            if (paths.getCommandlog() == null) {
+                //cl
+                PathEntry cl = new PathEntry();
+                cl.setPath("command_log");
+                paths.setCommandlog(cl);
+            }
+            if (paths.getCommandlogsnapshot() == null) {
+                //cl snap
+                PathEntry clsnap = new PathEntry();
+                clsnap.setPath("command_log_snapshot");
+                paths.setCommandlogsnapshot(clsnap);
+            }
+            if (paths.getExportoverflow() == null) {
+                //export overflow
+                PathEntry exp = new PathEntry();
+                exp.setPath("export_overflow");
+                paths.setExportoverflow(exp);
+            }
+
             //Command log info
             if (deployment.getCommandlog() == null) {
                 boolean enabled = false;
@@ -1340,7 +1379,7 @@ public abstract class CatalogUtil {
      * or deployment file, do the irritating exception crash test, jam the bytes in,
      * and get the SHA-1 hash.
      */
-    public static byte[] makeCatalogHash(byte[] inbytes)
+    public static byte[] makeCatalogOrDeploymentHash(byte[] inbytes)
     {
         MessageDigest md = null;
         try {
@@ -1381,6 +1420,7 @@ public abstract class CatalogUtil {
                 byte[] catalogBytes,
                 byte[] deploymentBytes)
     {
+        deploymentBytes = CatalogUtil.getDefaultPopulatedDeploymentBytes(new ByteArrayInputStream(deploymentBytes));
         ByteBuffer versionAndBytes =
             ByteBuffer.allocate(
                     4 +  // catalog bytes length
@@ -1396,8 +1436,8 @@ public abstract class CatalogUtil {
         versionAndBytes.putInt(catalogVersion);
         versionAndBytes.putLong(txnId);
         versionAndBytes.putLong(uniqueId);
-        versionAndBytes.put(makeCatalogHash(catalogBytes));
-        versionAndBytes.put(getDefaultPopulatedDeploymentAndHash(deploymentBytes).getFirst());
+        versionAndBytes.put(makeCatalogOrDeploymentHash(catalogBytes));
+        versionAndBytes.put(makeCatalogOrDeploymentHash(deploymentBytes));
         versionAndBytes.putInt(catalogBytes.length);
         versionAndBytes.put(catalogBytes);
         versionAndBytes.putInt(deploymentBytes.length);

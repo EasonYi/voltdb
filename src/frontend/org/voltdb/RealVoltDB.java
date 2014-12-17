@@ -1276,7 +1276,7 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback
 
             try {
                 deploymentBytes = org.voltcore.utils.CoreUtils.urlToBytes(m_config.m_pathToDeployment);
-                deploymentBytes = CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentBytes).getSecond();
+                deploymentBytes = CatalogUtil.getDefaultPopulatedDeploymentBytes(new ByteArrayInputStream(deploymentBytes));
             } catch (Exception ex) {
                 //Let us get bytes from ZK
             }

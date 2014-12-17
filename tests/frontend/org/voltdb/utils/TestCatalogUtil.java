@@ -166,8 +166,8 @@ public class TestCatalogUtil extends TestCase {
             "   </httpd>" +
             "</deployment>";
 
-        final File tmpDep = VoltProjectBuilder.writeStringToTempFile(new String(CatalogUtil.getDefaultPopulatedDeploymentAndHash(dep.getBytes()).getSecond()));
-        final File tmpDef = VoltProjectBuilder.writeStringToTempFile(new String(CatalogUtil.getDefaultPopulatedDeploymentAndHash(def.getBytes()).getSecond()));
+        final File tmpDep = VoltProjectBuilder.writeDeploymentToTempFile(dep);
+        final File tmpDef = VoltProjectBuilder.writeDeploymentToTempFile(def);
         final File tmpBoom = VoltProjectBuilder.writeStringToTempFile(boom);
 
         String msg = CatalogUtil.compileDeployment(catalog, tmpDep.getPath(), false);

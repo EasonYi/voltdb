@@ -125,9 +125,8 @@ public class CatalogContext {
         tables = database.getTables();
         authSystem = new AuthSystem(database, cluster.getSecurityenabled());
 
-        Pair<byte[], byte[]> p = CatalogUtil.getDefaultPopulatedDeploymentAndHash(deploymentBytes);
-        this.deploymentHash = p.getFirst();
-        this.deploymentBytes = p.getSecond();
+        this.deploymentBytes = CatalogUtil.getDefaultPopulatedDeploymentBytes(new ByteArrayInputStream(deploymentBytes));
+        this.deploymentHash = CatalogUtil.makeCatalogOrDeploymentHash(deploymentBytes);
         m_memoizedDeployment = null;
 
         m_jdbc = new JdbcDatabaseMetaDataGenerator(catalog, m_jarfile);
@@ -344,7 +343,7 @@ public class CatalogContext {
         byte[] catalogHash = null;
         try {
             // IZZY: memoize the catalog hash in the catalog context sometime, maybe
-            catalogHash = CatalogUtil.makeCatalogHash(getCatalogJarBytes());
+            catalogHash = CatalogUtil.makeCatalogOrDeploymentHash(getCatalogJarBytes());
         } catch (IOException ioe) {
             // Should never happen
         }
