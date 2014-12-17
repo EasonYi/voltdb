@@ -455,6 +455,17 @@ public abstract class CatalogUtil {
         return true;
     }
 
+    public static String compilePopulatedDeployment(Catalog catalog, String deploymentURL,
+            boolean isPlaceHolderCatalog)
+    {
+        DeploymentType deployment = CatalogUtil.parseDeployment(deploymentURL);
+        if (deployment == null) {
+            return "Error parsing deployment file: " + deploymentURL;
+        }
+        CatalogUtil.populateDefaultDeployment(deployment);
+        return compileDeployment(catalog, deployment, isPlaceHolderCatalog);
+    }
+
     public static String compileDeployment(Catalog catalog, String deploymentURL,
             boolean isPlaceHolderCatalog)
     {
@@ -651,19 +662,7 @@ public abstract class CatalogUtil {
         return new String(bytes);
     }
 
-    /**
-     * MODIFY this if you add a deployment entry which requires defaults to be filled in.
-     * @param deployIS
-     * @return Returns a reference to the root <deployment> element.
-     */
-    @SuppressWarnings("unchecked")
-    public static byte[] getDefaultPopulatedDeploymentBytes(InputStream deployIS) {
-        try {
-            DeploymentType deployment = getDeployment(deployIS);
-            if (deployment == null) {
-                hostLog.info("No deployment or valid deployment bytes supplied.");
-                return null;
-            }
+    public static void populateDefaultDeployment(DeploymentType deployment) {
             //partition detection
             if (deployment.getPartitionDetection() == null) {
                 PartitionDetectionType pd = new PartitionDetectionType();
@@ -793,6 +792,22 @@ public abstract class CatalogUtil {
                tt = new SystemSettingsType.Temptables();
                ss.setTemptables(tt);
             }
+    }
+
+    /**
+     * MODIFY this if you add a deployment entry which requires defaults to be filled in.
+     * @param deployIS
+     * @return Returns a reference to the root <deployment> element.
+     */
+    @SuppressWarnings("unchecked")
+    public static byte[] getDefaultPopulatedDeploymentBytes(InputStream deployIS) {
+        try {
+            DeploymentType deployment = getDeployment(deployIS);
+            if (deployment == null) {
+                hostLog.info("No deployment or valid deployment bytes supplied.");
+                return null;
+            }
+            populateDefaultDeployment(deployment);
             return getDeployment(deployment).getBytes(Constants.UTF8ENCODING);
         } catch (Exception e) {
             hostLog.error("Error schema validating deployment.xml file. " + e.getMessage());

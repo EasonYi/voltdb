@@ -1077,7 +1077,7 @@ public class TestJSONInterface extends TestCase {
             String jdep = getUrlOverJSON("http://localhost:8095/deployment", null, null, null, 200,  "application/json");
             assertTrue(jdep.contains("cluster"));
             //Download deployment
-            String xdep = getUrlOverJSON("http://localhost:8095/deployment/download", null, null, null, 200, "text/xml");
+            String xdep = getUrlOverJSON("http://localhost:8095/deployment/download", null, null, null, 200, "application/xml");
             assertTrue(xdep.contains("<deployment>"));
             assertTrue(xdep.contains("</deployment>"));
             //POST deployment with no content
@@ -1164,7 +1164,7 @@ public class TestJSONInterface extends TestCase {
             dep = getUrlOverJSON("http://localhost:8095/deployment/download?User=" + "user1&" + "Hashedpassword=d033e22ae348aeb5660fc2140aec35850c4da997", null, null, null, 200, "application/json");
             assertTrue(dep.contains("Permission denied"));
             //good user
-            dep = getUrlOverJSON("http://localhost:8095/deployment/download?User=" + "user2&" + "Hashedpassword=d033e22ae348aeb5660fc2140aec35850c4da997", null, null, null, 200, "text/xml");
+            dep = getUrlOverJSON("http://localhost:8095/deployment/download?User=" + "user2&" + "Hashedpassword=d033e22ae348aeb5660fc2140aec35850c4da997", null, null, null, 200, "application/xml");
             assertTrue(dep.contains("<deployment>"));
             assertTrue(dep.contains("</deployment>"));
             //get with jsonp
@@ -1226,7 +1226,7 @@ public class TestJSONInterface extends TestCase {
             dep = getUrlOverJSON("http://localhost:8095/deployment/download", "user1", "admin", "hashed", 200, "application/json");
             assertTrue(dep.contains("Permission denied"));
             //good user
-            dep = getUrlOverJSON("http://localhost:8095/deployment/download", "user2", "admin", "hashed", 200, "text/xml");
+            dep = getUrlOverJSON("http://localhost:8095/deployment/download", "user2", "admin", "hashed", 200, "application/xml");
             assertTrue(dep.contains("<deployment>"));
             assertTrue(dep.contains("</deployment>"));
         } finally {
@@ -1283,7 +1283,7 @@ public class TestJSONInterface extends TestCase {
             dep = getUrlOverJSON("http://localhost:8095/deployment/download", "user1", "admin", "basic", 200, "application/json");
             assertTrue(dep.contains("Permission denied"));
             //good user
-            dep = getUrlOverJSON("http://localhost:8095/deployment/download", "user2", "admin", "basic", 200, "text/xml");
+            dep = getUrlOverJSON("http://localhost:8095/deployment/download", "user2", "admin", "basic", 200, "application/xml");
             assertTrue(dep.contains("<deployment>"));
             assertTrue(dep.contains("</deployment>"));
         } finally {
